@@ -1,0 +1,27 @@
+{
+  "name": "practice-deta",
+  "description": "Practice Deta",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "start": "node -e \"require('./index').listen(3000, console.log('Server Started'));\""
+  },
+  "author": "Neo <neos21@gmail.com> (https://neos21.net/)",
+  "license": "MIT",
+  "homepage": "https://github.com/Neos21/practice-deta#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Neos21/practice-deta.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Neos21/practice-deta/issues"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/Neos21"
+  },
+  "dependencies": {
+    "express": "4.17.1",
+    "serve-favicon": "2.5.0"
+  }
+}

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Practice Deta.sh</title>
+    <link rel="icon" href="/favicon.ico">
+    <style>
+
+/* Styles */
+
+    </style>
+    <script>
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('exec').addEventListener('click', async () => {
+    console.log('Exec : Start');
+    try {
+      const response = await window.fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ myParam: 'Test Param' })
+      });
+      const data = await response.json();
+      console.log('Success', data);
+      document.getElementById('result').innerHTML = new Date().toISOString() + '<br>' + JSON.stringify(data);
+    }
+    catch(error) {
+      console.error('Failed', error);
+      document.getElementById('result').innerHTML = new Date().toISOString() + '<br>Error.';
+    }
+  });
+});
+
+    </script>
+  </head>
+  <body>
+
+<h1>Practice Deta.sh</h1>
+
+<p><button type="button" id="exec">Test</button></p>
+<pre id="result">Result Is Here</pre>
+
+<hr>
+<p>Author : <a href="https://neos21.net/">Neo</a></p>
+
+  </body>
+</html>
