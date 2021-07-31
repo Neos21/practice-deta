@@ -5,3 +5,5 @@ Thumbs.db
 
 act/
 node_modules/
+
+.env

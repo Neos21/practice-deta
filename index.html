@@ -7,42 +7,116 @@
     <link rel="icon" href="/favicon.ico">
     <style>
 
-/* Styles */
+html {
+  overflow-y: scroll;
+  word-break: break-all;
+  cursor: default;
+}
+
+h1 {
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+
+h1 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1 a:hover {
+  text-decoration: underline;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: .5rem;
+}
+
+#button {
+  cursor: pointer;
+}
+
+/* `0` が指定された時はマーカーとして非表示にする */
+li[value="0"]::marker {
+  font-size: 0;
+}
+
+strong {
+  color: #f00;
+}
 
     </style>
     <script>
 
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('exec').addEventListener('click', async () => {
-    console.log('Exec : Start');
+document.addEventListener('DOMContentLoaded', async () => {
+  const textLimit = 200;  // API 側と仕様を合わせておく
+  
+  const button = document.getElementById('button');
+  const text   = document.getElementById('text');
+  const posts  = document.getElementById('posts');
+  
+  const isEmptyText   = text => !text.trim();
+  const isTooLongText = text => text.trim().length > textLimit;
+  text.addEventListener('input', () => button.disabled = isEmptyText(text.value) || isTooLongText(text.value));
+  
+  button.addEventListener('click', async () => {
+    if(isEmptyText(text.value  )) return alert('Text is empty');
+    if(isTooLongText(text.value)) return alert('Too long text');
+    
     try {
-      const response = await window.fetch('/', {
-        method: 'POST',
+      button.disabled = true;
+      const response = await window.fetch('/posts', {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ myParam: 'Test Param' })
+        body: JSON.stringify({ text: text.value.trim() })
       });
       const data = await response.json();
-      console.log('Success', data);
-      document.getElementById('result').innerHTML = new Date().toISOString() + '<br>' + JSON.stringify(data);
+      console.log('PUT : Success : ', data);
+      
+      await loadPosts();
+      text.value = '';  // `button` は `disabled` のままで大丈夫
     }
     catch(error) {
-      console.error('Failed', error);
-      document.getElementById('result').innerHTML = new Date().toISOString() + '<br>Error.';
+      console.error('PUT : Failed : ', error);
+      posts.innerHTML = `<li value="0"><strong>Failed To Post</strong></li>`;
+      button.disabled = false;
     }
   });
+  
+  // First View
+  await loadPosts();
+  
+  async function loadPosts() {
+    try {
+      const response = await window.fetch('/posts');
+      const data = await response.json();
+      console.log(`GET : Success : Count [${data.posts.length}] Posts : `, data.posts);
+      posts.innerHTML = !data.posts.length
+        ? `<li value="0">No posts.</li>`
+        : data.posts.reduce((html, currentPost) => html + `<li value="${currentPost.id}">${currentPost.text}</li>`, '');
+    }
+    catch(error) {
+      console.error('GET : Failed : ', error);
+      posts.innerHTML = `<li value="0"><strong>Failed To Get Posts</strong></li>`;
+    }
+  }
 });
 
     </script>
   </head>
   <body>
 
-<h1>Practice Deta.sh</h1>
+<h1><a href="https://neos21.net/" title="Author : Neo">Practice Deta.sh</a></h1>
 
-<p><button type="button" id="exec">Test</button></p>
-<pre id="result">Result Is Here</pre>
+<p class="form">
+  <input type="text" id="text" placeholder="Text To Post" maxlength="200"></textarea>
+  <button type="button" id="button" disabled>Post</button>
+</p>
 
-<hr>
-<p>Author : <a href="https://neos21.net/">Neo</a></p>
+<ol id="posts">
+  <li value="0">Fetching Posts...</li>
+</ol>
 
   </body>
 </html>
